@@ -23,7 +23,7 @@ from wheely_pythia import (
     read_pythia_features as _read_pythia_features,
 )
 
-_logger = logging.getLogger(__name__)
+_logger = _logging.getLogger(__name__)
 
 
 def run_pythia_search(
