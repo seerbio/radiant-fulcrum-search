@@ -109,7 +109,7 @@ def _execute_pythia(
         )
     )
 
-    _logger.debug("Running Pythia command: %s", command)
+    _logger.info("Running Pythia command: %s", command)
 
     logpath = folder / f"{location.name}.log"
 
