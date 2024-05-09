@@ -93,7 +93,7 @@ def _execute_pythia(
     config: _PathLike,
     location: _PathLike,
 ) -> _PathLike:
-    location = Path(location)
+    location = _Path(location)
     folder = location.parent
 
     command = [
@@ -114,7 +114,7 @@ def _execute_pythia(
             shell=False,
             check=True,
             stdout=logfile,
-            stderr=subprocess.PIPE,
+            stderr=_subprocess.PIPE,
             text=True,
         )
 
