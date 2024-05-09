@@ -96,28 +96,41 @@ def _execute_pythia(
     location = _Path(location)
     folder = location.parent
 
-    command = [
-        executable,
-        library,
-        fasta,
-        config,
-        location,
-    ]
+    command = list(
+        map(
+            str,
+            [
+                executable,
+                library,
+                fasta,
+                config,
+                location,
+            ],
+        )
+    )
 
     _logger.debug("Running Pythia command: %s", command)
 
-    # Open a log file -- stdout from the command will be written there.
-    with open(folder / f"{location.name}.log", "w") as logfile:
+    logpath = folder / f"{location.name}.log"
+
+    # Open a log file -- output from the command will be written there.
+    with open(logpath, "w") as logfile:
         # Run the command. Raise an execption if the exit code indicates an error.
-        # Standard output will be written to the log file, but stderr will be written
-        # to _this_ process' output!
+        # All output (including errors!) will be written to the log file!
         _subprocess.run(
             command,
             shell=False,
             check=True,
             stdout=logfile,
-            stderr=_subprocess.PIPE,
+            stderr=_subprocess.STDOUT,
             text=True,
         )
 
-    return folder / f"{location.name}.pythiaDIA"
+    result = folder / f"{location.name}.pythiaDIA"
+
+    if not result.exists():
+        raise RuntimeError(
+            f"Pythia result file was not created: {result}; for more details check {logpath}"
+        )
+
+    return result
