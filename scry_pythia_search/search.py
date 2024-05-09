@@ -2,6 +2,7 @@ from os import (
     PathLike as _PathLike,
 )
 from typing import (
+    Iterable as _Iterable,
     Optional as _Optional,
     Union as _Union,
 )
