@@ -104,6 +104,8 @@ def _execute_pythia(
         location,
     ]
 
+    _logger.debug("Running Pythia command: %s", command)
+
     # Open a log file -- stdout from the command will be written there.
     with open(folder / f"{location.name}.log", "w") as logfile:
         # Run the command. Raise an execption if the exit code indicates an error.
