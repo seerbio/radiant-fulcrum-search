@@ -33,6 +33,7 @@ def run_pythia_search(
     config: _Union[dict, _PathLike],
     executable: _Union[str, _PathLike] = "PythiaDIA",
     mode: str = "serial",
+    reuse_existing: bool = False,
     **kwargs,
 ) -> _PsmDataset:
     """
@@ -53,6 +54,10 @@ def run_pythia_search(
           provide faster execution provided that sufficient CPU and RAM is
           available. You _must_ ensure that Pythia is configured to use an
           appropriate number of threads.
+    reuse_existing: if truthy, check for a result file with the expected name
+                    and use it if it exists. Defaults to `False` as there is
+                    no check that these results used the correct library or
+                    params!
 
     Other keyword args will be passed to `wheely_pythia.read_pythia_features`.
     """
@@ -76,6 +81,7 @@ def run_pythia_search(
             fasta=fasta,
             config=config_path,
             location=loc,
+            reuse_existing=reuse_existing,
         )
         outputs.append(out)
 
@@ -92,9 +98,15 @@ def _execute_pythia(
     fasta: _PathLike,
     config: _PathLike,
     location: _PathLike,
+    reuse_existing: bool,
 ) -> _PathLike:
     location = _Path(location)
     folder = location.parent
+
+    result = folder / f"{location.name}.pythiaDIA"
+
+    if reuse_existing and result.exists():
+        return result
 
     command = list(
         map(
@@ -125,8 +137,6 @@ def _execute_pythia(
             stderr=_subprocess.STDOUT,
             text=True,
         )
-
-    result = folder / f"{location.name}.pythiaDIA"
 
     if not result.exists():
         raise RuntimeError(
