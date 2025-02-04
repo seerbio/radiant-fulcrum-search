@@ -31,7 +31,9 @@ def pythia_mbr_workflow(spark, **kwargs):
     if kwargs["search"]["backend"] != "pythia":
         raise ValueError("The search backend must be 'pythia'")
     if kwargs["search"]["reuse_existing"]:
-        raise ValueError("The search backend must have reuse_existing = false!")
+        raise ValueError(
+            "The search backend must have reuse_existing = false!"
+        )
 
     # TODO: where to output library file??
     lib_loc = "/tmp/pythia-firstpass-lib.tsv"
@@ -42,7 +44,9 @@ def pythia_mbr_workflow(spark, **kwargs):
         try:
             firstpass_params["search"] = deepcopy(kwargs.get("search"))
         except KeyError as e:
-            raise ValueError("No search parameters found in kwargs or library!") from e
+            raise ValueError(
+                "No search parameters found in kwargs or library!"
+            ) from e
     firstpass_params.setdefault("airpot", kwargs.get("airpot", dict()))
     if "cortado" not in firstpass_params:
         if "cortado" in kwargs:
@@ -57,7 +61,10 @@ def pythia_mbr_workflow(spark, **kwargs):
         spectra_backend="pythia",
     )
 
-    _logger.info("Computed parameters for first pass library creation: \n%s", _toml.dumps(firstpass_params))
+    _logger.info(
+        "Computed parameters for first pass library creation: \n%s",
+        _toml.dumps(firstpass_params),
+    )
 
     # Fetch the v0 workflow from the registry and create a library
     v0_workflow = _get_workflow("v0")
@@ -73,7 +80,10 @@ def pythia_mbr_workflow(spark, **kwargs):
     # Set up second pass params to use the library
     scndpass_params = deepcopy(kwargs)
     scndpass_params.setdefault("search", dict())["library"] = lib_loc
-    _logger.info("Computed parameters for second pass: \n%s", _toml.dumps(scndpass_params))
+    _logger.info(
+        "Computed parameters for second pass: \n%s",
+        _toml.dumps(scndpass_params),
+    )
 
     # Run the full workflow
     result = v1_workflow(**kwargs, spark=spark)
