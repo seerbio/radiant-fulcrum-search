@@ -44,7 +44,12 @@ def pythia_mbr_workflow(spark, **kwargs):
         except KeyError as e:
             raise ValueError("No search parameters found in kwargs or library!") from e
     firstpass_params.setdefault("airpot", kwargs.get("airpot", dict()))
-    firstpass_params.setdefault("cortado", kwargs.get("cortado", dict()))["pep_fdr_type"] = "precursor-only"
+    if "cortado" not in firstpass_params:
+        if "cortado" in kwargs:
+            firstpass_params["cortado"] = deepcopy(kwargs["cortado"])
+        else:
+            firstpass_params["cortado"] = dict()
+    firstpass_params["cortado"]["pep_fdr_type"] = "precursor-only"
     firstpass_params["output"] = dict(
         firstpass_params.get("output", dict()),
         location=lib_loc,
