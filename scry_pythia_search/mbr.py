@@ -86,5 +86,5 @@ def pythia_mbr_workflow(spark, **kwargs):
     )
 
     # Run the full workflow
-    result = v1_workflow(**kwargs, spark=spark)
+    result = v1_workflow(**scndpass_params, spark=spark)
     return result
