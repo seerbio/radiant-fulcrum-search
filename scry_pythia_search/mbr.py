@@ -53,8 +53,19 @@ def pythia_mbr_workflow(spark, library=None, **kwargs):
             firstpass_params["cortado"] = dict()
     firstpass_params["cortado"]["pep_fdr_type"] = "precursor-only"
     firstpass_params["output"] = dict(
-        firstpass_params.get("output", dict()),
-        location=lib_loc,
+        dict(
+            # Defaults
+            dict(
+                qval_thresh=0.01,
+                include_decoys=False,
+                location="/tmp/pythia-firstpass-lib.tsv",
+            ),
+
+            # Override hard-coded defaults with provided values
+            **firstpass_params.get("output", dict()),
+        ),
+
+        # Forced overrides
         backend="write_library",
         spectra_backend="pythia",
     )
@@ -63,6 +74,8 @@ def pythia_mbr_workflow(spark, library=None, **kwargs):
         "Computed parameters for first pass library creation: \n%s",
         _toml.dumps(firstpass_params),
     )
+
+    lib_loc = firstpass_params["output"]["location"]
 
     # Fetch the v0 workflow from the registry and create a library
     v0_workflow = _get_workflow("v0")
@@ -82,6 +95,10 @@ def pythia_mbr_workflow(spark, library=None, **kwargs):
         "Computed parameters for second pass: \n%s",
         _toml.dumps(scndpass_params),
     )
+
+    # Specify that PSM-level filtering should be employed, as precursors will
+    # be filtered to
+    scndpass_params.setdefault("cortado", dict())["pep_fdr_type"] = "psm-only"
 
     # Run the full workflow
     result = v1_workflow(**scndpass_params, spark=spark)
