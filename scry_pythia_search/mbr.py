@@ -8,7 +8,7 @@ from scry.workflow import get_workflow as _get_workflow
 _logger = _logging.getLogger(__name__)
 
 
-def pythia_mbr_workflow(spark, **kwargs):
+def pythia_mbr_workflow(spark, library=None, **kwargs):
     """
     Pythia MBR workflow implementation.
 
@@ -16,16 +16,17 @@ def pythia_mbr_workflow(spark, **kwargs):
     ---------
     spark: SparkSession
         The Spark session to use for the workflow.
+    library:
+        Parameter overrides to be used for library creation.
+        These should largely be the same as those for the ``v0`` workflow.
+        Where certain parameters are missing from ``library`` they will be
+        populated with either default values, or corresponding values
+        from ``kwargs`` -- this choice is determined by this function to
+        provide the most sensible behavior.
+        Note that certain specified parameters in ``library`` may be ignored.
     kwargs: dict
         Additional keyword arguments for the workflow.
-        These should largely be the same as those for the v1 workflow.
-        However, an additional ``library`` key is also permitted,
-        specifying parameter overrides to be used for parameter creation.
-        Note that some parameters in ``library`` may be ignored. Where
-        certain parameters are missing from ``library`` they will be
-        populated with either default values, or corresponding values
-        from ``kwargs`` -- this choice is determined by the workflow to
-        provide the most sensible behavior.
+        These should largely be the same as those for the ``v1`` workflow.
     """
     # Ensure that the search backend is pythia
     if kwargs["search"]["backend"] != "pythia":
@@ -35,11 +36,8 @@ def pythia_mbr_workflow(spark, **kwargs):
             "The search backend must have reuse_existing = false!"
         )
 
-    # TODO: where to output library file??
-    lib_loc = "/tmp/pythia-firstpass-lib.tsv"
-
     # Set up first pass params to create library
-    firstpass_params = deepcopy(kwargs.pop("library", dict()))
+    firstpass_params = deepcopy(library) if library else dict()
     if "search" not in firstpass_params:
         try:
             firstpass_params["search"] = deepcopy(kwargs.get("search"))
@@ -55,8 +53,17 @@ def pythia_mbr_workflow(spark, **kwargs):
             firstpass_params["cortado"] = dict()
     firstpass_params["cortado"]["pep_fdr_type"] = "precursor-only"
     firstpass_params["output"] = dict(
-        firstpass_params.get("output", dict()),
-        location=lib_loc,
+        dict(
+            # Defaults
+            dict(
+                qval_thresh=0.01,
+                include_decoys=False,
+                location="/tmp/pythia-firstpass-lib.tsv",
+            ),
+            # Override hard-coded defaults with provided values
+            **firstpass_params.get("output", dict()),
+        ),
+        # Forced overrides
         backend="write_library",
         spectra_backend="pythia",
     )
@@ -65,6 +72,8 @@ def pythia_mbr_workflow(spark, **kwargs):
         "Computed parameters for first pass library creation: \n%s",
         _toml.dumps(firstpass_params),
     )
+
+    lib_loc = firstpass_params["output"]["location"]
 
     # Fetch the v0 workflow from the registry and create a library
     v0_workflow = _get_workflow("v0")
@@ -84,6 +93,10 @@ def pythia_mbr_workflow(spark, **kwargs):
         "Computed parameters for second pass: \n%s",
         _toml.dumps(scndpass_params),
     )
+
+    # Specify that PSM-level filtering should be employed, as precursors will
+    # be filtered to
+    scndpass_params.setdefault("cortado", dict())["pep_fdr_type"] = "psm-only"
 
     # Run the full workflow
     result = v1_workflow(**scndpass_params, spark=spark)
