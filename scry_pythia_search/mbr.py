@@ -60,11 +60,9 @@ def pythia_mbr_workflow(spark, library=None, **kwargs):
                 include_decoys=False,
                 location="/tmp/pythia-firstpass-lib.tsv",
             ),
-
             # Override hard-coded defaults with provided values
             **firstpass_params.get("output", dict()),
         ),
-
         # Forced overrides
         backend="write_library",
         spectra_backend="pythia",
