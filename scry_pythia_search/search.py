@@ -66,6 +66,15 @@ def run_pythia_search(
 
     location = _listify(location)
 
+    if not isinstance(reuse_existing, bool):
+        _orig_reuse = reuse_existing
+        reuse_existing = bool(reuse_existing)
+        _logger.warning(
+            'Got non-boolean value reuse_existing = "%s"! Will use value: %s',
+            _orig_reuse,
+            reuse_existing,
+        )
+
     start = _time()
 
     outputs = []
