@@ -153,6 +153,8 @@ def _execute_pythia(
 
     _logger.info("Running Pythia command: %s", command)
 
+    folder.mkdir(parents=True, exist_ok=True)
+
     logpath = folder / f"{location.name}.log"
 
     # Open a log file -- output from the command will be written there.
