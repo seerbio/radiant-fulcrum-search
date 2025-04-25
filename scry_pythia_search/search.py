@@ -33,6 +33,7 @@ def run_pythia_search(
     config: _Union[dict, _PathLike],
     executable: _Union[str, _PathLike] = "PythiaDIA",
     mode: str = "serial",
+    output_location: _Optional[_PathLike] = None,
     reuse_existing: bool = False,
     **kwargs,
 ) -> _PsmDataset:
@@ -41,25 +42,38 @@ def run_pythia_search(
 
     Arguments
     ---------
-    location: one or more `PathLike` values giving the local path of the mzML
-              or Parquet file(s) to search.
-    library: the local path of the library to use.
-    fasta: the local path of the FASTA to use.
-    config: the local path of the Pythia configuration file to use.
-            TODO: permit passing a dict with configuration key-value pairs.
-    executable: the path of a Pythia executable. By default, the executable
-                `PythiaDIA` will be located using the current value of `$PATH`.
-    mode: if "serial" each of multiple files will be processed sequentially.
-          TODO: If "parallel" all files will be run concurrently; this should
-          provide faster execution provided that sufficient CPU and RAM is
-          available. You _must_ ensure that Pythia is configured to use an
-          appropriate number of threads.
-    reuse_existing: if truthy, check for a result file with the expected name
-                    and use it if it exists. Defaults to `False` as there is
-                    no check that these results used the correct library or
-                    params!
-
-    Other keyword args will be passed to `wheely_pythia.read_pythia_features`.
+    location : PathLike
+        One or more `PathLike` values giving the local path of the mzML
+        or Parquet file(s) to search.
+    library : PathLike
+        The local path of the library to use.
+    fasta : PathLike
+        The local path of the FASTA to use.
+    config : PathLike
+        The local path of the Pythia configuration file to use.
+        TODO: permit passing a dict with configuration key-value pairs.
+    executable : str | PathLike (optional)
+        The path of a Pythia executable.
+        By default, the executable `PythiaDIA` will be located using the
+        current value of `$PATH`.
+    mode : ("serial" | "parallel")
+        If "serial" each of multiple files will be processed sequentially.
+        TODO: If "parallel" all files will be run concurrently; this should
+        provide faster execution provided that sufficient CPU and RAM is
+        available. You _must_ ensure that Pythia is configured to use an
+        appropriate number of threads.
+    output_location : PathLike, optional
+        If provided, Pythia result files will be written to this location,
+        and this location will be passed to :py:func:``wheely_pythia.read_pythia_features``.
+        When ``reuse_existing`` is ``True``, this location will be checked
+        for existing results.
+    reuse_existing : bool, optional
+        If truthy, check for a result file with the expected name
+        and use it if it exists. Defaults to `False` as there is
+        no check that these results used the correct library or
+        params!
+    kwargs :
+        Other keyword args will be passed to :py:func:``wheely_pythia.read_pythia_features``.
     """
     if mode != "serial":
         raise NotImplementedError("TODO: parallel processing")
@@ -90,6 +104,7 @@ def run_pythia_search(
             fasta=fasta,
             config=config_path,
             location=loc,
+            output_location=output_location,
             reuse_existing=reuse_existing,
         )
         outputs.append(out)
@@ -108,9 +123,10 @@ def _execute_pythia(
     config: _PathLike,
     location: _PathLike,
     reuse_existing: bool,
+    output_location: _Optional[_PathLike] = None,
 ) -> _PathLike:
     location = _Path(location)
-    folder = location.parent
+    folder = _Path(output_location or location.parent)
 
     result = folder / f"{location.name}.pythiaDIA"
 
@@ -126,17 +142,24 @@ def _execute_pythia(
                 fasta,
                 config,
                 location,
+                *(
+                    s
+                    for s in ["--output-folder", output_location]
+                    if output_location
+                ),
             ],
         )
     )
 
     _logger.info("Running Pythia command: %s", command)
 
+    folder.mkdir(parents=True, exist_ok=True)
+
     logpath = folder / f"{location.name}.log"
 
     # Open a log file -- output from the command will be written there.
     with open(logpath, "w") as logfile:
-        # Run the command. Raise an execption if the exit code indicates an error.
+        # Run the command. Raise an exeception if the exit code indicates an error.
         # All output (including errors!) will be written to the log file!
         _subprocess.run(
             command,
