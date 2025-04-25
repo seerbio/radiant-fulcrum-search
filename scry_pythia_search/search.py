@@ -126,7 +126,7 @@ def _execute_pythia(
     output_location: _Optional[_PathLike] = None,
 ) -> _PathLike:
     location = _Path(location)
-    folder = output_location or location.parent
+    folder = _Path(output_location or location.parent)
 
     result = folder / f"{location.name}.pythiaDIA"
 
