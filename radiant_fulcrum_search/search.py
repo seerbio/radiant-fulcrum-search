@@ -35,7 +35,7 @@ def run_radiant_search(
     mode: str = "serial",
     output_location: _Optional[_PathLike] = None,
     reuse_existing: bool = False,
-    results_extension: str = ".radiantDIA",
+    _results_extension: str = None,
     **kwargs,
 ) -> _PsmDataset:
     """
@@ -107,7 +107,7 @@ def run_radiant_search(
             location=loc,
             output_location=output_location,
             reuse_existing=reuse_existing,
-            results_extension=results_extension,
+            results_extension=_results_extension,
         )
         outputs.append(out)
 
@@ -126,10 +126,12 @@ def _execute_radiant(
     location: _PathLike,
     reuse_existing: bool,
     output_location: _Optional[_PathLike] = None,
-    results_extension: str = "radiantDIA",
+    results_extension: str = None,
 ) -> _PathLike:
     location = _Path(location)
     folder = _Path(output_location or location.parent)
+
+    results_extension = results_extension or "radiantDIA"
 
     result = folder / f"{location.name}.{results_extension}"
 
