@@ -19,26 +19,27 @@ from wheely.mammoth import (
 from wheely.mammoth.utils import (
     listify as _listify,
 )
-from wheely_pythia import (
-    read_pythia_features as _read_pythia_features,
+from wheely_radiant import (
+    read_radiant_features as _read_radiant_features,
 )
 
 _logger = _logging.getLogger(__name__)
 
 
-def run_pythia_search(
+def run_radiant_search(
     location: _Union[_PathLike, _Iterable[_PathLike]],
     library: _PathLike,
     fasta: _PathLike,
     config: _Union[dict, _PathLike],
-    executable: _Union[str, _PathLike] = "PythiaDIA",
+    executable: _Union[str, _PathLike] = "RadiantDIA",
     mode: str = "serial",
     output_location: _Optional[_PathLike] = None,
     reuse_existing: bool = False,
+    _results_extension: str = None,
     **kwargs,
 ) -> _PsmDataset:
     """
-    Execute Pythia locally to search the given location(s).
+    Execute Radiant DIA locally to search the given location(s).
 
     Arguments
     ---------
@@ -50,21 +51,21 @@ def run_pythia_search(
     fasta : PathLike
         The local path of the FASTA to use.
     config : PathLike
-        The local path of the Pythia configuration file to use.
+        The local path of the Radiant DIA configuration file to use.
         TODO: permit passing a dict with configuration key-value pairs.
     executable : str | PathLike (optional)
-        The path of a Pythia executable.
-        By default, the executable `PythiaDIA` will be located using the
+        The path of a Radiant DIA executable.
+        By default, the executable `RadiantDIA` will be located using the
         current value of `$PATH`.
     mode : ("serial" | "parallel")
         If "serial" each of multiple files will be processed sequentially.
         TODO: If "parallel" all files will be run concurrently; this should
         provide faster execution provided that sufficient CPU and RAM is
-        available. You _must_ ensure that Pythia is configured to use an
+        available. You _must_ ensure that Radiant DIA is configured to use an
         appropriate number of threads.
     output_location : PathLike, optional
-        If provided, Pythia result files will be written to this location,
-        and this location will be passed to :py:func:``wheely_pythia.read_pythia_features``.
+        If provided, Radiant DIA result files will be written to this location,
+        and this location will be passed to :py:func:``wheely_radiant.read_radiant_features``.
         When ``reuse_existing`` is ``True``, this location will be checked
         for existing results.
     reuse_existing : bool, optional
@@ -73,7 +74,7 @@ def run_pythia_search(
         no check that these results used the correct library or
         params!
     kwargs :
-        Other keyword args will be passed to :py:func:``wheely_pythia.read_pythia_features``.
+        Other keyword args will be passed to :py:func:``wheely_radiant.read_radiant_features``.
     """
     if mode != "serial":
         raise NotImplementedError("TODO: parallel processing")
@@ -98,7 +99,7 @@ def run_pythia_search(
         else:
             config_path = config
 
-        out = _execute_pythia(
+        out = _execute_radiant(
             executable=executable,
             library=library,
             fasta=fasta,
@@ -106,6 +107,7 @@ def run_pythia_search(
             location=loc,
             output_location=output_location,
             reuse_existing=reuse_existing,
+            results_extension=_results_extension,
         )
         outputs.append(out)
 
@@ -113,10 +115,10 @@ def run_pythia_search(
 
     _logger.info("Searched %d files in %.02f sec", len(outputs), stop - start)
 
-    return _read_pythia_features(location=outputs, **kwargs)
+    return _read_radiant_features(location=outputs, **kwargs)
 
 
-def _execute_pythia(
+def _execute_radiant(
     executable: _PathLike,
     library: _PathLike,
     fasta: _PathLike,
@@ -124,11 +126,14 @@ def _execute_pythia(
     location: _PathLike,
     reuse_existing: bool,
     output_location: _Optional[_PathLike] = None,
+    results_extension: str = None,
 ) -> _PathLike:
     location = _Path(location)
     folder = _Path(output_location or location.parent)
 
-    result = folder / f"{location.name}.pythiaDIA"
+    results_extension = results_extension or "radiantDIA"
+
+    result = folder / f"{location.name}.{results_extension}"
 
     if reuse_existing and result.exists():
         return result
@@ -151,7 +156,7 @@ def _execute_pythia(
         )
     )
 
-    _logger.info("Running Pythia command: %s", command)
+    _logger.info("Running command: %s", command)
 
     folder.mkdir(parents=True, exist_ok=True)
 
@@ -172,7 +177,7 @@ def _execute_pythia(
 
     if not result.exists():
         raise RuntimeError(
-            f"Pythia result file was not created: {result}; for more details check {logpath}"
+            f"Radiant result file was not created: {result}; for more details check {logpath}"
         )
 
     return result

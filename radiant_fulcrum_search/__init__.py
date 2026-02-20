@@ -1,9 +1,9 @@
 """
-`scry_pythia_search`
+``radiant_fulcrum_search`z
 
 Exports:
 
-- `run_pythia_search`
+- `run_radiant_search`
 """
 
 # Initialize the package.
@@ -11,7 +11,7 @@ try:
     from importlib.metadata import version, PackageNotFoundError
 
     try:
-        __version__ = version("scry-pythia-search")
+        __version__ = version("radiant-fulcrum-search")
     except PackageNotFoundError:
         pass
 
@@ -19,10 +19,9 @@ except ImportError:
     from pkg_resources import get_distribution, DistributionNotFound
 
     try:
-        __version__ = get_distribution("scry-pythia-search").version
+        __version__ = get_distribution("radiant-fulcrum-search").version
     except DistributionNotFound:
         pass
 
 # Here is where we can export public functions and classes.
-# from .package import Symbol  # import relative to this package to avoid namespace collisions
-from .search import run_pythia_search
+from .search import run_radiant_search

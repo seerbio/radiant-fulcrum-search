@@ -5,8 +5,8 @@
 1. Clone the repository
 
     ```shell
-    git clone git@github.com:seerbio/scry-pythia-search.git
-    cd scry-pythia-search
+    git clone git@github.com:seerbio/radiant-fulcrum-search.git
+    cd radiant-fulcrum-search
     ```
 
     Alternatively, create a fork through GitHub and clone that repository.
