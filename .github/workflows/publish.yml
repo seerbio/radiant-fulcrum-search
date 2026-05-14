@@ -1,14 +1,16 @@
 # This workflows will upload a Python Package using Twine when a release is created
 # For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
 
-name: Deploy to CodeArtifact
+name: Deploy Packages
 
 on:
   release:
     types: [created]
 
 jobs:
-  deploy:
+  codeartifact-deploy:
+    name: Upload release to CodeArtifact
+    if: ${{ github.event_name == 'release' }}
     runs-on: [self-hosted, aws-master, X64]
 
     steps:
@@ -19,11 +21,36 @@ jobs:
         python-version: '3.x'
     - name: Install dependencies
       run: |
-        pip config unset global.index-url || true  # Ensure we don't have old CodeArtifact creds in pip config
+        pip config unset global.index-url || true
         python -m pip install --upgrade pip
-        pip install setuptools wheel twine build
+        pip install setuptools wheel twine build 'awscli>=1.18.83'
         aws codeartifact login --tool twine --repository seer_ds --domain seer --domain-owner 718843040700 --region us-west-2
     - name: Build and publish
       run: |
         python -m build --sdist --wheel .
         twine upload --repository codeartifact dist/*
+
+  pypi-deploy:
+    name: Upload release to PyPI
+    if: ${{ github.event_name == 'release' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    environment:
+      name: pypi
+      url: https://pypi.org/p/radiant-fulcrum-search
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install setuptools wheel twine build
+      - name: Build package
+        run: python -m build --sdist --wheel .
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
