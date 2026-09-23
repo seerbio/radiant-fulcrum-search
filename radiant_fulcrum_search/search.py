@@ -35,6 +35,7 @@ def run_radiant_search(
     mode: str = "serial",
     output_location: _Optional[_PathLike] = None,
     reuse_existing: bool = False,
+    fragment_competition: _Optional[dict] = None,
     _results_extension: str = None,
     **kwargs,
 ) -> _PsmDataset:
@@ -73,6 +74,12 @@ def run_radiant_search(
         and use it if it exists. Defaults to `False` as there is
         no check that these results used the correct library or
         params!
+    fragment_competition : dict, optional
+        Enable opt-in competition for coeluting isobaric assignments. Arguments
+        are passed to ``wheely_radiant.competition.compete_isobaric_features``.
+        An empty dictionary enables the defaults; ``None`` preserves the native
+        output. Full Radiant feature reports are required. Re-estimate confidence
+        downstream; native scores and q-values are not recalibrated here.
     kwargs :
         Other keyword args will be passed to :py:func:``wheely_radiant.read_radiant_features``.
     """
@@ -115,7 +122,12 @@ def run_radiant_search(
 
     _logger.info("Searched %d files in %.02f sec", len(outputs), stop - start)
 
-    return _read_radiant_features(location=outputs, **kwargs)
+    result = _read_radiant_features(location=outputs, **kwargs)
+    if fragment_competition is not None:
+        from wheely_radiant.competition import compete_isobaric_features
+
+        result = compete_isobaric_features(result, **fragment_competition)
+    return result
 
 
 def _execute_radiant(
