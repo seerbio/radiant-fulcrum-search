@@ -4,6 +4,7 @@
 Exports:
 
 - `run_radiant_search`
+- `RadiantBatchError`
 """
 
 # Initialize the package.
@@ -24,4 +25,6 @@ except ImportError:
         pass
 
 # Here is where we can export public functions and classes.
-from .search import run_radiant_search
+from .search import RadiantBatchError, run_radiant_search
+
+__all__ = ["run_radiant_search", "RadiantBatchError"]
