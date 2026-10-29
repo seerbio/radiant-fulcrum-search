@@ -1,0 +1,260 @@
+{
+  "ticket": "PF-100",
+  "implementation_commit": "5f0ac21539ab34125d01d0ce046cd8f6a61468f2",
+  "pr_url": "https://github.com/seerbio/radiant-fulcrum-search/pull/11",
+  "draft": true,
+  "automated": {
+    "python": "3.10",
+    "pytest_passed": 84,
+    "pytest_seconds": 4.75,
+    "black": "passed",
+    "flake8": "passed",
+    "github_build": "passed",
+    "github_lint": "passed"
+  },
+  "simulation": {
+    "description": "Fake native CLI; 32-CPU resource model; no scientific computation. Physical affinity maps to existing host CPUs.",
+    "files": 16,
+    "concurrent_processes": 4,
+    "threads_per_process": 8,
+    "files_per_process": 4,
+    "peak_simultaneous_searches": 4,
+    "exactly_once": true,
+    "above_16_files_tested": true
+  },
+  "real": {
+    "passed": true,
+    "available_cpus": 16,
+    "native_batch_seconds": 421.1663934920216,
+    "harness_wall_seconds": 521.7140732679982,
+    "overlap_seconds": 221.4426629850641,
+    "files_completed": 3,
+    "files_failed": 1,
+    "outputs_retained": 3,
+    "library_loads": [
+      1,
+      1
+    ],
+    "process_exit_codes": [
+      1,
+      0
+    ],
+    "cpu_affinities": [
+      [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ]
+    ],
+    "comparisons": [
+      {
+        "input": "/home/ubuntu/proteomexchange/fulcrum-radiant-dev/mzml/single-cell/20231010_250pgHeLa_240k_20Th_40ms_DDM_50SPD_2.mzML",
+        "passed": true,
+        "single_rows": 43553,
+        "batch_rows": 43553,
+        "columns": 188,
+        "different_columns": {},
+        "exactly_equal": true,
+        "maximum_absolute_numeric_difference": 0,
+        "sort_keys": [
+          "PeptideStringWithMods",
+          "PeptideStringWithModsDecoyOrigin",
+          "Charge",
+          "TargetKey",
+          "ScanNumber",
+          "IsDecoy"
+        ],
+        "duplicate_identities": 0
+      },
+      {
+        "input": "/home/ubuntu/proteomexchange/fulcrum-radiant-dev/mzml/single-cell/20231010_250pgHeLa_240k_20Th_40ms_DDM_50SPD_3.mzML",
+        "passed": true,
+        "single_rows": 41462,
+        "batch_rows": 41462,
+        "columns": 188,
+        "different_columns": {},
+        "exactly_equal": true,
+        "maximum_absolute_numeric_difference": 0,
+        "sort_keys": [
+          "PeptideStringWithMods",
+          "PeptideStringWithModsDecoyOrigin",
+          "Charge",
+          "TargetKey",
+          "ScanNumber",
+          "IsDecoy"
+        ],
+        "duplicate_identities": 0
+      },
+      {
+        "input": "/home/ubuntu/proteomexchange/fulcrum-radiant-dev/mzml/single-cell/20231010_250pgHeLa_240k_20Th_40ms_DDM_50SPD_4.mzML",
+        "passed": true,
+        "single_rows": 42245,
+        "batch_rows": 42245,
+        "columns": 188,
+        "different_columns": {},
+        "exactly_equal": true,
+        "maximum_absolute_numeric_difference": 0,
+        "sort_keys": [
+          "PeptideStringWithMods",
+          "PeptideStringWithModsDecoyOrigin",
+          "Charge",
+          "TargetKey",
+          "ScanNumber",
+          "IsDecoy"
+        ],
+        "duplicate_identities": 0
+      }
+    ],
+    "downstream_rows": 127260,
+    "checks": {
+      "three_successes_one_failure": true,
+      "partial_failure_retains_three_outputs": true,
+      "two_processes_with_mixed_exit_status": true,
+      "one_library_load_per_process": true,
+      "scientific_output_equivalence": true,
+      "exact_scientific_output_equivalence": true,
+      "downstream_three_input_identities": true,
+      "downstream_native_rowcounts": true,
+      "no_failed_file_in_downstream": true,
+      "target_decoy_presence": true
+    },
+    "packages": {
+      "wheely-radiant": "1.2.0",
+      "wheely-mammoth": "0.17.0",
+      "pyspark": "3.5.9",
+      "pyarrow": "25.0.1",
+      "toml": "0.10.2"
+    }
+  },
+  "reuse": {
+    "passed": true,
+    "checks": {
+      "three_reused_inputs": true,
+      "no_native_processes": true,
+      "all_native_rows_retained": true,
+      "all_files_have_targets_and_decoys": true,
+      "target_protein_annotations": true,
+      "valid_precursors": true,
+      "charge_integer": true,
+      "target_boolean": true,
+      "scoring_columns_available": true
+    },
+    "native_processes": 0,
+    "downstream_rows": 127260,
+    "wall_seconds": 8.692479116958566
+  },
+  "resources": {
+    "sample_interval_seconds": 2,
+    "scope": "Sampling began during the native run, so memory peaks are observed lower bounds, not full-run high-water marks.",
+    "samples": 125,
+    "peak_sampled_processes": 2,
+    "peak_sampled_total_rss_kib": 9587128,
+    "per_pid": {
+      "712375": {
+        "max_sampled_rss_kib": 5516100,
+        "cpu_affinities": [
+          "0-7"
+        ],
+        "max_threads": 18
+      },
+      "712376": {
+        "max_sampled_rss_kib": 4892376,
+        "cpu_affinities": [
+          "8-15"
+        ],
+        "max_threads": 18
+      }
+    }
+  },
+  "integrity": {
+    "passed": true,
+    "checks": [
+      {
+        "path": "/home/ubuntu/proteomexchange/fulcrum-radiant-dev/mzml/single-cell/20231010_250pgHeLa_240k_20Th_40ms_DDM_50SPD_2.mzML",
+        "expected_sha256": "0371369db90d90f8a2932c58ed6f443e03a0e935d67201b68b8ce5e8002beb46",
+        "actual_sha256": "0371369db90d90f8a2932c58ed6f443e03a0e935d67201b68b8ce5e8002beb46",
+        "passed": true
+      },
+      {
+        "path": "/home/ubuntu/proteomexchange/fulcrum-radiant-dev/mzml/single-cell/20231010_250pgHeLa_240k_20Th_40ms_DDM_50SPD_3.mzML",
+        "expected_sha256": "f5f73a8357c618477a8d7a938a5de08dbcf6c925bf61c72007780c9a40f4220b",
+        "actual_sha256": "f5f73a8357c618477a8d7a938a5de08dbcf6c925bf61c72007780c9a40f4220b",
+        "passed": true
+      },
+      {
+        "path": "/home/ubuntu/proteomexchange/fulcrum-radiant-dev/mzml/single-cell/20231010_250pgHeLa_240k_20Th_40ms_DDM_50SPD_4.mzML",
+        "expected_sha256": "e2b2b973c58bb14cb105b910a94bd70419fac3326dc8e78afd6c3c52462e88f6",
+        "actual_sha256": "e2b2b973c58bb14cb105b910a94bd70419fac3326dc8e78afd6c3c52462e88f6",
+        "passed": true
+      },
+      {
+        "path": "/home/ubuntu/proteomexchange/radiant-single-cell/entrapment/paired-shuffle-v1/results/fulcrum-radiant/mbr/hela_250pg_technical/fulcrum-mbr-library.tsv",
+        "expected_sha256": "8cff449c759074b65567d6b5aeab461eb6c2dc1558d9c632879ecd546473ef3e",
+        "actual_sha256": "8cff449c759074b65567d6b5aeab461eb6c2dc1558d9c632879ecd546473ef3e",
+        "passed": true
+      },
+      {
+        "path": "/home/ubuntu/proteomexchange/fulcrum-radiant-dev/entrapment/paired-shuffle-v1/fasta/human_entrapment_contaminants.fasta",
+        "expected_sha256": "6307458f1e626d7f90874024253d05cd2c31a5b8bb907fbd6a9e0a1a85ef3d3b",
+        "actual_sha256": "6307458f1e626d7f90874024253d05cd2c31a5b8bb907fbd6a9e0a1a85ef3d3b",
+        "passed": true
+      },
+      {
+        "path": "/home/ubuntu/radiant-pf99-validation/data/validation-annotated.radiantConfig",
+        "expected_sha256": "3a833e25c2628b778dc0af97b8490b15ead16d70ec4c1ad423caed4096bc297b",
+        "actual_sha256": "3a833e25c2628b778dc0af97b8490b15ead16d70ec4c1ad423caed4096bc297b",
+        "passed": true
+      }
+    ],
+    "binary_sha256": "3a9e170f0bd9fad5eb71b76090ac3df8a7f35de8fca109904640473def70c9a5"
+  },
+  "output_hashes": [
+    {
+      "name": "20231010_250pgHeLa_240k_20Th_40ms_DDM_50SPD_2.mzML.radiantDIA",
+      "bytes": 26927314,
+      "sha256": "fc4e8fd7f624c8c7ae2f1256377382fb36f8ffe3b653ef0f973460f4db08b6f9"
+    },
+    {
+      "name": "20231010_250pgHeLa_240k_20Th_40ms_DDM_50SPD_3.mzML.radiantDIA",
+      "bytes": 25541280,
+      "sha256": "502c5db428d673f344ff989ac2068b10e468d7bd1b0c849a7640aa65ce8e989d"
+    },
+    {
+      "name": "20231010_250pgHeLa_240k_20Th_40ms_DDM_50SPD_4.mzML.radiantDIA",
+      "bytes": 26139799,
+      "sha256": "72e739ad7906c9333b108efb447e410d705fcd84eb546c90952964828fba4eef"
+    }
+  ],
+  "limitations": [
+    "The 32-core workload is a scheduler simulation; host has 16 logical CPUs.",
+    "Real scientific comparisons use a cohort-derived empirical TSV library, measuring functional equivalence rather than sensitivity/FDR.",
+    "One real mixed batch is descriptive evidence, not a repeated throughput benchmark.",
+    "Downstream validation covers native-output reader ingestion and metadata; no rescoring/FDR/protein inference.",
+    "Resource samples began during the native run; sampled RSS peaks are lower bounds, not full-run high-water marks.",
+    "Auxiliary native OS threads may exceed General.threadCount; Linux affinity enforces their CPU allocation.",
+    "No merge or release performed."
+  ],
+  "pdf_report": {
+    "name": "PF-100-validation-report.pdf",
+    "pages": 6,
+    "bytes": 78686,
+    "sha256": "3114c33ba39802734d10243b4db5dedd928600bf3ff46f7d6dd55410be1dc07e",
+    "jira_attachment_id": "113821",
+    "all_pages_visually_verified": true
+  }
+}
